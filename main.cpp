@@ -139,7 +139,7 @@ void inserirListD(noD *&head, noD *novoNo, int pos){
 	}
 }
 
-noD encontrarD(noD *&head, int pos){
+noD* encontrarD(noD *&head, int pos){
 	int count = 0;
 	noD *atual = head;
 	while(atual->next != NULL && count < pos){
@@ -152,49 +152,106 @@ noD encontrarD(noD *&head, int pos){
 	return NULL;
 }
 
-int mergeListD(noD *&head, int inicio, int final){
-	while(inicio<final){
-		int meio = (inicio + final)/2;
-		noD *esquerda = head;
-		noD *fimEsquerda = encontrarD(meio);
-		noD *direita = fimEsquerda -> next;
-		fimEsquerda -> NULL
-		direita -> prev = NULL; 
-		
-		mergeListD(esquerda, inicio, meio);
-		mergeListD(direita, meio + 1, final);
-		
-		merge(head, esquerda, direita, inicio, meio, final);
-	}
-}
-
-void merge(noD *&head, noD *esquerda, noD *direita, int inicio, int meio, int final){
+void merge(noD *&head, int inicio, int meio, int final){
+	noD *esquerda = encontrarD(head, inicio);
+	noD *fimEsquerda = encontrarD(head, meio);
+	noD *direita = fimEsquerda -> next;
+	fimEsquerda -> next = NULL;
+	direita -> prev = NULL; 
+	
 	int tamEsq = tamanhoListD(esquerda);
 	int tamDir = tamanhoListD(direita);
-	int tam = tamEsq + tamDir;
 	
 	int i = 0;
 	int j = 0;
-	int k = 0;
+	int k = inicio;
 	
 	while(i < tamEsq && j < tamDir){
 		if(encontrarD(esquerda, i)<=encontrarD(direita, j)){
-			inserirListD(head, encontrarD(esquerda, i), countMerge);
-			countMerge ++;
-			i++
-			k++
+			noD *atual = head;
+			while(atual != encontrarD(esquerda, i)){
+				atual = atual -> next;
+			}
+			noD *anterior = atual -> prev;
+			noD *posterior = atual -> next;
+			if(anterior!=NULL){
+				anterior -> next = posterior;
+			}
+			if(posterior!=NULL){
+				posterior -> prev = anterior;
+			}
+			delete atual;
+			inserirListD(head, encontrarD(esquerda, i), k);
+			i++;
+			k++;
 		} else{
-			inserirListD(head, encontrarD(direita, j),countMerge);
-			countMerge ++;
-			j++
-			k++
+			noD *atual = head;
+			while(atual != encontrarD(direita, j)){
+				atual = atual -> next;
+			}
+			noD *anterior = atual -> prev;
+			noD *posterior = atual -> next;
+			if(anterior!=NULL){
+				anterior -> next = posterior;
+			}
+			if(posterior!=NULL){
+				posterior -> prev = anterior;
+			}
+			delete atual;
+			inserirListD(head, encontrarD(direita, j), k);
+			j++;
+			k++;
 		}
 	}
-	//terminar
+	while(i < tamEsq){
+		noD *atual = head;
+		while(atual != encontrarD(esquerda, i)){
+			atual = atual -> next;
+		}
+		noD *anterior = atual -> prev;
+		noD *posterior = atual -> next;
+		if(anterior!=NULL){
+			anterior -> next = posterior;
+		}
+		if(posterior!=NULL){
+			posterior -> prev = anterior;
+		}
+		delete atual;
+		inserirListD(head, encontrarD(esquerda, i), k);
+		i++;
+		k++;
+	}
+	while(j < tamDir){
+		noD *atual = head;
+		while(atual != encontrarD(direita, j)){
+			atual = atual -> next;
+		}
+		noD *anterior = atual -> prev;
+		noD *posterior = atual -> next;
+		if(anterior!=NULL){
+			anterior -> next = posterior;
+		}
+		if(posterior!=NULL){
+			posterior -> prev = anterior;
+		}
+		delete atual;
+		inserirListD(head, encontrarD(direita, j), k);
+		j++;
+		k++;
+	}
 }
 
+void mergeListD(noD *&head, int inicio, int final){
+	if(inicio<final){
+		int meio = (inicio + final)/2;
+		mergeListD(head, inicio, meio);
+		mergeListD(head, meio + 1, final);
+		merge(head, inicio, meio, final);
+	}
+}
+
+
 int main() {
-	countMerge = 0;
 	// criando lista
 	no *lista = new no;
 	lista -> data = 7;
@@ -260,7 +317,7 @@ int main() {
 	// maior no da lista
 	cout << "maior no da lista = " << maiorNoD(listaD) << endl;
 	// ordenando
-	
-	
+	mergeListD(listaD, 0, tamanhoListD(listaD) - 1);
+	printListD(listaD);
 	return 0;
 }
