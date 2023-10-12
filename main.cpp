@@ -167,7 +167,7 @@ void merge(noD *&head, int inicio, int meio, int final){
 	int k = inicio;
 	
 	while(i < tamEsq && j < tamDir){
-		if(encontrarD(esquerda, i)<=encontrarD(direita, j)){
+		if(encontrarD(esquerda, i)-> data<=encontrarD(direita, j) -> data){
 			noD *atual = head;
 			while(atual != encontrarD(esquerda, i)){
 				atual = atual -> next;
